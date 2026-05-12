@@ -8,4 +8,8 @@ router.get("/", playerController.getAllPlayers);
 // Şimdilik sadece yolu açıyoruz, birazdan "Admin mi?" kontrolü ekleyeceğiz
 router.post("/", playerController.createPlayer);
 
+router.put("/:id", playerController.updatePlayer); // Güncelleme için PUT
+
+router.delete("/:id", playerController.deletePlayer); // Silme için DELETE
+
 module.exports = router;

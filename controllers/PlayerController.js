@@ -21,3 +21,25 @@ exports.createPlayer = async (req, res) => {
     res.status(400).json({ error: "Ekleme başarısız. Verileri kontrol et." });
   }
 };
+
+exports.updatePlayer = async (req, res) => {
+  try {
+    const updatedPlayer = await Player.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true },
+    );
+    res.status(200).json(updatedPlayer);
+  } catch (err) {
+    res.status(400).json({ error: "Güncelleme başarısız." });
+  }
+};
+
+exports.deletePlayer = async (req, res) => {
+  try {
+    await Player.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: "Futbolcu silindi." });
+  } catch (err) {
+    res.status(400).json({ error: "Silme işlemi başarısız." });
+  }
+};
