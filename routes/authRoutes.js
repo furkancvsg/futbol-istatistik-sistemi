@@ -6,3 +6,5 @@ const authController = require("../controllers/authController");
 router.post("/register", authController.register);
 
 module.exports = router;
+// Giriş adresi: /api/auth/login
+router.post("/login", authController.login);
