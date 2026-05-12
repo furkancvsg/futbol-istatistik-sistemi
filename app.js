@@ -19,3 +19,5 @@ app.listen(PORT, () => {
 });
 const authRoutes = require("./routes/authRoutes");
 app.use("/api/auth", authRoutes);
+const playerRoutes = require("./routes/playerRoutes");
+app.use("/api/players", playerRoutes);
