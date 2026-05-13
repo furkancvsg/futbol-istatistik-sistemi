@@ -42,7 +42,56 @@
           </div>
         </div>
       </div>
-      <div id="main-content" style="display: none"></div>
+      <div id="main-content" style="display: none">
+        <div
+          id="admin-actions"
+          class="card p-3 mb-4 shadow-sm"
+          style="display: none"
+        >
+          <h5>Yeni Futbolcu Ekle</h5>
+          <div class="row g-2">
+            <div class="col-md-3">
+              <input
+                type="text"
+                id="p-name"
+                class="form-control"
+                placeholder="Ad Soyad"
+              />
+            </div>
+            <div class="col-md-3">
+              <input
+                type="text"
+                id="p-team"
+                class="form-control"
+                placeholder="Takım"
+              />
+            </div>
+            <div class="col-md-2">
+              <input
+                type="number"
+                id="p-goals"
+                class="form-control"
+                placeholder="Gol"
+              />
+            </div>
+            <div class="col-md-2">
+              <input
+                type="number"
+                id="p-assists"
+                class="form-control"
+                placeholder="Asist"
+              />
+            </div>
+            <div class="col-md-2">
+              <button onclick="addPlayer()" class="btn btn-success w-100">
+                Ekle
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div id="player-list-container"></div>
+      </div>
     </div>
 
     <script src="app.js"></script>

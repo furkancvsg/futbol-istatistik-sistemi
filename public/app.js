@@ -28,9 +28,52 @@ async function login() {
 function showDashboard() {
   document.getElementById("auth-section").style.display = "none";
   document.getElementById("main-content").style.display = "block";
+  if (
+    localStorage.getItem("role") === "Admin" ||
+    localStorage.getItem("role") === "Kurucu Admin"
+  ) {
+    document.getElementById("admin-actions").style.display = "block";
+  }
   fetchPlayers();
 }
 
+// Yeni Futbolcu Ekleme
+async function addPlayer() {
+  const player = {
+    name: document.getElementById("p-name").value,
+    team: document.getElementById("p-team").value,
+    goals: document.getElementById("p-goals").value,
+    assists: document.getElementById("p-assists").value,
+  };
+
+  const res = await fetch("/api/players", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: "Bearer " + localStorage.getItem("token"), // Güvenlik için token şart
+    },
+    body: JSON.stringify(player),
+  });
+
+  if (res.ok) {
+    alert("Futbolcu eklendi!");
+    fetchPlayers(); // Listeyi tazele
+  }
+}
+
+// Futbolcu Silme
+async function deletePlayer(id) {
+  if (!confirm("Silmek istediğine emin misin?")) return;
+
+  const res = await fetch(`/api/players/${id}`, {
+    method: "DELETE",
+    headers: { Authorization: "Bearer " + localStorage.getItem("token") },
+  });
+
+  if (res.ok) {
+    fetchPlayers();
+  }
+}
 // Sayfa yüklendiğinde futbolcuları getir
 async function fetchPlayers() {
   try {
