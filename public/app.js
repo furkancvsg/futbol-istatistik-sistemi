@@ -1,5 +1,12 @@
 const appDiv = document.getElementById("app");
 
+// Sayfa yüklendiğinde kullanıcı zaten giriş yapmışsa direkt içeri al
+window.onload = () => {
+  if (localStorage.getItem("token")) {
+    showDashboard();
+  }
+};
+
 async function login() {
   const email = document.getElementById("login-email").value;
   const password = document.getElementById("login-password").value;
@@ -28,16 +35,14 @@ async function login() {
 function showDashboard() {
   document.getElementById("auth-section").style.display = "none";
   document.getElementById("main-content").style.display = "block";
-  if (
-    localStorage.getItem("role") === "Admin" ||
-    localStorage.getItem("role") === "Kurucu Admin"
-  ) {
+
+  const role = localStorage.getItem("role");
+  if (role === "Admin" || role === "Kurucu Admin") {
     document.getElementById("admin-actions").style.display = "block";
   }
   fetchPlayers();
 }
 
-// Yeni Futbolcu Ekleme
 async function addPlayer() {
   const player = {
     name: document.getElementById("p-name").value,
@@ -50,18 +55,22 @@ async function addPlayer() {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: "Bearer " + localStorage.getItem("token"), // Güvenlik için token şart
+      Authorization: "Bearer " + localStorage.getItem("token"),
     },
     body: JSON.stringify(player),
   });
 
   if (res.ok) {
     alert("Futbolcu eklendi!");
-    fetchPlayers(); // Listeyi tazele
+    // Formu temizle
+    document.getElementById("p-name").value = "";
+    document.getElementById("p-team").value = "";
+    document.getElementById("p-goals").value = "";
+    document.getElementById("p-assists").value = "";
+    fetchPlayers();
   }
 }
 
-// Futbolcu Silme
 async function deletePlayer(id) {
   if (!confirm("Silmek istediğine emin misin?")) return;
 
@@ -74,20 +83,21 @@ async function deletePlayer(id) {
     fetchPlayers();
   }
 }
-// Sayfa yüklendiğinde futbolcuları getir
+
 async function fetchPlayers() {
   try {
     const res = await fetch("/api/players");
     const players = await res.json();
-
     renderPlayerList(players);
   } catch (err) {
-    appDiv.innerHTML =
-      '<div class="alert alert-danger">Veriler yüklenemedi!</div>';
+    console.error("Veriler yüklenemedi!");
   }
 }
 
 function renderPlayerList(players) {
+  const role = localStorage.getItem("role");
+  const isAdmin = role === "Admin" || role === "Kurucu Admin";
+
   let html = `
         <h3>Futbolcu Listesi</h3>
         <table class="table table-striped mt-3">
@@ -97,6 +107,7 @@ function renderPlayerList(players) {
                     <th>Takım</th>
                     <th>Gol</th>
                     <th>Asist</th>
+                    ${isAdmin ? "<th>İşlem</th>" : ""}
                 </tr>
             </thead>
             <tbody>
@@ -108,6 +119,7 @@ function renderPlayerList(players) {
                         <td>${p.team}</td>
                         <td>${p.goals}</td>
                         <td>${p.assists}</td>
+                        ${isAdmin ? `<td><button class="btn btn-danger btn-sm" onclick="deletePlayer('${p._id}')">Sil</button></td>` : ""}
                     </tr>
                 `,
                   )
@@ -115,7 +127,12 @@ function renderPlayerList(players) {
             </tbody>
         </table>
     `;
-  appDiv.innerHTML = html;
+  // appDiv yerine sadece liste alanına basıyoruz
+  const listContainer = document.getElementById("player-list-container");
+  if (listContainer) {
+    listContainer.innerHTML = html;
+  } else {
+    // Eğer container yoksa (ilk yükleme gibi) appDiv'e basabilirsin ama yukarıdaki yapı daha güvenli
+    appDiv.innerHTML = html;
+  }
 }
-
-fetchPlayers();
