@@ -1,5 +1,36 @@
 const appDiv = document.getElementById("app");
 
+async function login() {
+  const email = document.getElementById("login-email").value;
+  const password = document.getElementById("login-password").value;
+
+  try {
+    const res = await fetch("/api/auth/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
+      showDashboard();
+    } else {
+      alert(data.error || "Giriş başarısız!");
+    }
+  } catch (err) {
+    console.error("Giriş hatası:", err);
+  }
+}
+
+function showDashboard() {
+  document.getElementById("auth-section").style.display = "none";
+  document.getElementById("main-content").style.display = "block";
+  fetchPlayers();
+}
+
 // Sayfa yüklendiğinde futbolcuları getir
 async function fetchPlayers() {
   try {

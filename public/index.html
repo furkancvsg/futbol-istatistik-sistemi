@@ -15,7 +15,35 @@
       </div>
     </nav>
 
-    <div id="app" class="container"></div>
+    <div id="app" class="container">
+      <div id="auth-section" class="row justify-content-center">
+        <div class="col-md-4">
+          <div class="card p-4 shadow">
+            <h3 class="text-center mb-4">Giriş Yap</h3>
+            <input
+              type="email"
+              id="login-email"
+              class="form-control mb-2"
+              placeholder="E-posta"
+            />
+            <input
+              type="password"
+              id="login-password"
+              class="form-control mb-3"
+              placeholder="Şifre"
+            />
+            <button onclick="login()" class="btn btn-primary w-100">
+              Giriş
+            </button>
+            <hr />
+            <p class="text-center small">
+              Hesabın yok mu? <a href="#" onclick="showRegister()">Kayıt Ol</a>
+            </p>
+          </div>
+        </div>
+      </div>
+      <div id="main-content" style="display: none"></div>
+    </div>
 
     <script src="app.js"></script>
   </body>
