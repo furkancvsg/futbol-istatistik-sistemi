@@ -5,7 +5,7 @@ const PlayerSchema = new mongoose.Schema({
   team: { type: String, required: true },
   goals: { type: Number, default: 0 },
   assists: { type: Number, default: 0 },
-  xG: { type: Number, default: 0 }, // Senin istediğin istatistik metriği
+  xG: { type: Number, default: 0 }, 
   addedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
 });
 

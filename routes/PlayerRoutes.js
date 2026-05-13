@@ -2,14 +2,16 @@ const express = require("express");
 const router = express.Router();
 const playerController = require("../controllers/playerController");
 
-// Herkes görebilir
+// Futbolcu Listeleme
 router.get("/", playerController.getAllPlayers);
 
-// Şimdilik sadece yolu açıyoruz, birazdan "Admin mi?" kontrolü ekleyeceğiz
+// Futbolcu Ekleme
 router.post("/", playerController.createPlayer);
 
-router.put("/:id", playerController.updatePlayer); // Güncelleme için PUT
+// Futbolcu Güncelleme
+router.put("/:id", playerController.updatePlayer);
 
-router.delete("/:id", playerController.deletePlayer); // Silme için DELETE
+// Futbolcu Silme
+router.delete("/:id", playerController.deletePlayer);
 
 module.exports = router;
