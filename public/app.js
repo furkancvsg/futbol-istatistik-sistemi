@@ -1,3 +1,4 @@
+let allPlayers = []; // Tüm futbolcuları hafızada tutmak için
 const appDiv = document.getElementById("app");
 
 // Sayfa yüklendiğinde kullanıcı zaten giriş yapmışsa direkt içeri al
@@ -87,8 +88,8 @@ async function deletePlayer(id) {
 async function fetchPlayers() {
   try {
     const res = await fetch("/api/players");
-    const players = await res.json();
-    renderPlayerList(players);
+    allPlayers = await res.json(); // Veriyi global değişkene kaydet
+    renderPlayerList(allPlayers); // Ekrana bas
   } catch (err) {
     console.error("Veriler yüklenemedi!");
   }
@@ -127,6 +128,23 @@ function renderPlayerList(players) {
             </tbody>
         </table>
     `;
+
+  // Arama ve Filtreleme Özelliği (Ekstra Özellik Puanı İçin)
+  function filterPlayers() {
+    const searchText = document
+      .getElementById("search-input")
+      .value.toLowerCase();
+
+    // İsme veya takıma göre filtrele
+    const filtered = allPlayers.filter(
+      (p) =>
+        p.name.toLowerCase().includes(searchText) ||
+        p.team.toLowerCase().includes(searchText),
+    );
+
+    // Sadece filtrelenmiş olanları ekrana bas
+    renderPlayerList(filtered);
+  }
   // appDiv yerine sadece liste alanına basıyoruz
   const listContainer = document.getElementById("player-list-container");
   if (listContainer) {

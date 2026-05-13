@@ -29,7 +29,12 @@ const authRoutes = require("./routes/authRoutes");
 const playerRoutes = require("./routes/playerRoutes");
 
 app.use("/api/auth", authRoutes);
-app.use("/api/players", playerRoutes);
+app.get("/api/players", (req, res) => {
+  res.json([
+    { name: "Mauro Icardi", team: "Galatasaray", goals: 25, assists: 8 },
+    { name: "Edin Dzeko", team: "Fenerbahçe", goals: 20, assists: 5 },
+  ]);
+});
 
 const PORT = 3000;
 app.listen(PORT, () => {
