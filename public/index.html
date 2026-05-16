@@ -10,8 +10,16 @@
   </head>
   <body class="bg-light">
     <nav class="navbar navbar-dark bg-dark mb-4">
-      <div class="container">
+      <div class="container d-flex justify-content-between">
         <span class="navbar-brand">Futbol Takip Sistemi</span>
+        <button
+          id="logout-btn"
+          class="btn btn-outline-danger btn-sm"
+          style="display: none"
+          onclick="logout()"
+        >
+          Çıkış Yap
+        </button>
       </div>
     </nav>
 
@@ -42,6 +50,49 @@
           </div>
         </div>
       </div>
+
+      <div
+        id="register-section"
+        class="row justify-content-center"
+        style="display: none"
+      >
+        <div class="col-md-4">
+          <div class="card p-4 shadow">
+            <h3 class="text-center mb-4">Kayıt Ol</h3>
+            <input
+              type="text"
+              id="reg-name"
+              class="form-control mb-2"
+              placeholder="Ad Soyad"
+            />
+            <input
+              type="email"
+              id="reg-email"
+              class="form-control mb-2"
+              placeholder="E-posta"
+            />
+            <input
+              type="password"
+              id="reg-password"
+              class="form-control mb-3"
+              placeholder="Şifre"
+            />
+            <select id="reg-role" class="form-control mb-3">
+              <option value="Kullanıcı">Kullanıcı (Sadece İzler)</option>
+              <option value="Admin">Admin (Ekleme/Silme Yapar)</option>
+            </select>
+            <button onclick="register()" class="btn btn-success w-100">
+              Hesap Oluştur
+            </button>
+            <hr />
+            <p class="text-center small">
+              Zaten hesabın var mı?
+              <a href="#" onclick="showLogin()">Giriş Yap</a>
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div id="main-content" style="display: none">
         <div
           id="admin-actions"
@@ -89,25 +140,17 @@
             </div>
           </div>
         </div>
-        <div id="main-content" style="display: none">
-          <div
-            id="admin-actions"
-            class="card p-3 mb-4 shadow-sm"
-            style="display: none"
-          ></div>
 
-          <div class="mb-3">
-            <input
-              type="text"
-              id="search-input"
-              class="form-control"
-              placeholder="Futbolcu adı veya Takım ara..."
-              onkeyup="filterPlayers()"
-            />
-          </div>
-
-          <div id="player-list-container"></div>
+        <div class="mb-3">
+          <input
+            type="text"
+            id="search-input"
+            class="form-control"
+            placeholder="Futbolcu adı veya Takım ara..."
+            onkeyup="filterPlayers()"
+          />
         </div>
+
         <div id="player-list-container"></div>
       </div>
     </div>

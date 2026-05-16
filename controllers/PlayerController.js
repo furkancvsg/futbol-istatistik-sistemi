@@ -14,6 +14,15 @@ exports.getAllPlayers = async (req, res) => {
 exports.createPlayer = async (req, res) => {
   try {
     const { name, team, goals, assists, xG } = req.body;
+    if (!name || !team || goals === undefined || assists === undefined) {
+      return res
+        .status(400)
+        .json({ error: "Tüm alanların doldurulması zorunludur." });
+    }
+
+    if (goals < 0 || assists < 0) {
+      return res.status(400).json({ error: "İstatistikler negatif olamaz." });
+    }
     const newPlayer = new Player({ name, team, goals, assists, xG });
     await newPlayer.save();
     res.status(201).json({ message: "Futbolcu başarıyla eklendi!" });
