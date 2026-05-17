@@ -1,9 +1,9 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose"); // Veritabanı motorumuz
 const swaggerUi = require("swagger-ui-express");
 const swaggerJsdoc = require("swagger-jsdoc");
-require("dotenv").config();
 
 app.use(express.json());
 app.use(express.static("public"));

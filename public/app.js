@@ -1,5 +1,5 @@
 let allPlayers = [];
-let editingPlayerId = null; // Hangi oyuncuyu güncellediğimizi tutacak değişken
+let editingPlayerId = null;
 
 window.onload = () => {
   if (localStorage.getItem("token")) {
@@ -24,8 +24,6 @@ function showDashboard() {
     document.getElementById("register-section").style.display = "none";
   }
   document.getElementById("main-content").style.display = "block";
-
-  // Çıkış butonunu göster
   document.getElementById("logout-btn").style.display = "block";
 
   const role = localStorage.getItem("role");
@@ -42,10 +40,7 @@ async function register() {
   const password = document.getElementById("reg-password").value;
   const role = document.getElementById("reg-role").value;
 
-  if (!name || !email || !password) {
-    alert("Lütfen tüm alanları doldur!");
-    return;
-  }
+  if (!name || !email || !password) return alert("Lütfen tüm alanları doldur!");
 
   try {
     const res = await fetch("/api/auth/register", {
@@ -53,20 +48,13 @@ async function register() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ name, email, password, role }),
     });
-
     const data = await res.json();
-
     if (res.ok) {
       alert("Kayıt başarılı! Şimdi giriş yapabilirsin.");
-      document.getElementById("reg-name").value = "";
-      document.getElementById("reg-email").value = "";
-      document.getElementById("reg-password").value = "";
       showLogin();
-    } else {
-      alert(data.error || "Kayıt başarısız oldu!");
-    }
+    } else alert(data.error || "Kayıt başarısız oldu!");
   } catch (err) {
-    console.error("Kayıt hatası:", err);
+    console.error(err);
   }
 }
 
@@ -80,18 +68,14 @@ async function login() {
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
     });
-
     const data = await res.json();
-
     if (res.ok) {
       localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.role);
       showDashboard();
-    } else {
-      alert(data.error || "Giriş başarısız!");
-    }
+    } else alert(data.error || "Giriş başarısız!");
   } catch (err) {
-    console.error("Giriş hatası:", err);
+    console.error(err);
   }
 }
 
@@ -106,55 +90,57 @@ async function fetchPlayers() {
   }
 }
 
+// FBREF MAKYAJI: Tablo class'larına table-sm ve table-hover eklendi. xG sütunu açıldı.
 function renderPlayerList(players) {
   const role = localStorage.getItem("role");
   const isAdmin = role === "Admin" || role === "Kurucu Admin";
 
   let html = `
-        <h3>Futbolcu Listesi</h3>
-        <table class="table table-striped mt-3">
-            <thead>
-                <tr>
-                    <th>Ad</th>
-                    <th>Takım</th>
-                    <th>Gol</th>
-                    <th>Asist</th>
-                    ${isAdmin ? "<th>İşlem</th>" : ""}
-                </tr>
-            </thead>
-            <tbody>
-                ${players
-                  .map(
-                    (p) => `
-                    <tr>
-                        <td>${p.name}</td>
-                        <td>${p.team}</td>
-                        <td>${p.goals}</td>
-                        <td>${p.assists}</td>
-                        ${
-                          isAdmin
-                            ? `
-                            <td>
-                                <button class="btn btn-warning btn-sm me-1" onclick="editPlayer('${p._id}')">Düzenle</button>
-                                <button class="btn btn-danger btn-sm" onclick="deletePlayer('${p._id}')">Sil</button>
-                            </td>
-                        `
-                            : ""
-                        }
-                    </tr>
-                `,
-                  )
-                  .join("")}
-            </tbody>
-        </table>
+        <h3 class="mt-4 mb-3" style="font-weight: 600;">Takım İstatistikleri</h3>
+        <div class="table-responsive shadow-sm">
+          <table class="table table-sm table-hover table-striped align-middle bg-white m-0">
+              <thead class="table-dark">
+                  <tr>
+                      <th>Oyuncu Adı</th>
+                      <th>Takım</th>
+                      <th class="text-center">Gol</th>
+                      <th class="text-center">Asist</th>
+                      <th class="text-center">xG</th>
+                      ${isAdmin ? "<th class='text-end pe-3'>İşlemler</th>" : ""}
+                  </tr>
+              </thead>
+              <tbody>
+                  ${players
+                    .map(
+                      (p) => `
+                      <tr>
+                          <td class="fw-bold">${p.name}</td>
+                          <td>${p.team}</td>
+                          <td class="text-center">${p.goals}</td>
+                          <td class="text-center">${p.assists}</td>
+                          <td class="text-center fw-semibold text-primary">${p.xG || "0.00"}</td>
+                          ${
+                            isAdmin
+                              ? `
+                              <td class="text-end pe-2">
+                                  <button class="btn btn-outline-warning btn-sm me-1" onclick="editPlayer('${p._id}')">Düzenle</button>
+                                  <button class="btn btn-outline-danger btn-sm" onclick="deletePlayer('${p._id}')">Sil</button>
+                              </td>
+                          `
+                              : ""
+                          }
+                      </tr>
+                  `,
+                    )
+                    .join("")}
+              </tbody>
+          </table>
+        </div>
     `;
   const listContainer = document.getElementById("player-list-container");
-  if (listContainer) {
-    listContainer.innerHTML = html;
-  }
+  if (listContainer) listContainer.innerHTML = html;
 }
 
-// --- DÜZENLEME MODUNU AÇAN FONKSİYON ---
 function editPlayer(id) {
   const player = allPlayers.find((p) => p._id === id);
   if (!player) return;
@@ -163,78 +149,72 @@ function editPlayer(id) {
   document.getElementById("p-team").value = player.team;
   document.getElementById("p-goals").value = player.goals;
   document.getElementById("p-assists").value = player.assists;
+  document.getElementById("p-xg").value = player.xG || ""; // xG'yi forma çek
 
   editingPlayerId = id;
   const btn = document.querySelector("#admin-actions button");
   btn.textContent = "Güncelle";
-  btn.className = "btn btn-warning w-100";
+  btn.className = "btn btn-warning btn-sm w-100";
 }
 
-// --- EKLEME VE GÜNCELLEME İŞLEMİ (BİRLEŞTİRİLDİ) ---
 async function addPlayer() {
   const name = document.getElementById("p-name").value.trim();
   const team = document.getElementById("p-team").value.trim();
   const goals = document.getElementById("p-goals").value;
   const assists = document.getElementById("p-assists").value;
+  const xG = document.getElementById("p-xg").value; // xG'yi formdan al
 
   if (!name || !team || goals === "" || assists === "") {
-    alert("Lütfen tüm alanları eksiksiz doldur!");
-    return;
+    return alert("Lütfen tüm alanları eksiksiz doldur!");
   }
 
-  const playerData = { name, team, goals, assists };
+  // Veritabanına xG'yi de gönderiyoruz
+  const playerData = { name, team, goals, assists, xG };
   let res;
 
+  const headers = {
+    "Content-Type": "application/json",
+    Authorization: "Bearer " + localStorage.getItem("token"),
+  };
+
   if (editingPlayerId) {
-    // GÜNCELLEME İŞLEMİ
     res = await fetch(`/api/players/${editingPlayerId}`, {
       method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
+      headers,
       body: JSON.stringify(playerData),
     });
   } else {
-    // YENİ EKLEME İŞLEMİ
     res = await fetch("/api/players", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + localStorage.getItem("token"),
-      },
+      headers,
       body: JSON.stringify(playerData),
     });
   }
 
   if (res.ok) {
-    alert(editingPlayerId ? "Futbolcu güncellendi!" : "Futbolcu eklendi!");
-
     document.getElementById("p-name").value = "";
     document.getElementById("p-team").value = "";
     document.getElementById("p-goals").value = "";
     document.getElementById("p-assists").value = "";
+    document.getElementById("p-xg").value = ""; // xG alanını temizle
 
     editingPlayerId = null;
     const btn = document.querySelector("#admin-actions button");
     btn.textContent = "Ekle";
-    btn.className = "btn btn-success w-100";
+    btn.className = "btn btn-success btn-sm w-100";
 
     fetchPlayers();
   }
 }
 
 async function deletePlayer(id) {
-  if (!confirm("Silmek istediğine emin misin?")) return;
-
+  if (!confirm("Bu oyuncuyu istatistiklerden silmek istediğine emin misin?"))
+    return;
   const res = await fetch(`/api/players/${id}`, {
     method: "DELETE",
     headers: { Authorization: "Bearer " + localStorage.getItem("token") },
   });
-
-  if (res.ok) {
-    fetchPlayers();
-  }
+  if (res.ok) fetchPlayers();
 }
 
 function filterPlayers() {
